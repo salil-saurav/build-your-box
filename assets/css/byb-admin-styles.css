@@ -1,0 +1,50 @@
+.byb-settings-notice {
+    background: #e7f3ff;
+    border: 1px solid #2196F3;
+    border-left: 4px solid #2196F3;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.byb-settings-notice h3 {
+    margin-top: 0;
+    color: #1976D2;
+}
+
+.byb-settings-notice ol {
+    margin-left: 20px;
+}
+
+.byb-settings-notice code {
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    color: #d63384;
+}
+
+#byb_product_data .options_group {
+    padding: 15px;
+}
+
+#byb_product_data .form-field {
+    margin-bottom: 15px;
+}
+
+.byb-admin-help {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.byb-admin-help h4 {
+    margin-top: 0;
+    color: #23282d;
+}
+
+.byb-admin-help ul {
+    margin-left: 20px;
+}
