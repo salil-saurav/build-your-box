@@ -72,7 +72,7 @@ For each product you want to include:
 
 Customize the box builder with these parameters:
 
-```
+```text
 [build_your_box max_capacity="15" capacity_type="weight" show_categories="yes"]
 ```
 
@@ -104,7 +104,7 @@ Customize the box builder with these parameters:
 
 ## File Structure
 
-```
+```bash
 build-your-box/
 ├── build-your-box.php              # Main plugin file
 ├── README.md                        # Documentation
@@ -261,4 +261,4 @@ Developed to replicate the functionality of OurCow.com.au's "Build Your Box" fea
 3. Ensure all requirements are met
 4. Test with default WordPress theme to rule out theme conflicts
 
-**Enjoy building custom boxes for your customers! 📦**
+### Enjoy building custom boxes for your customers! 📦
