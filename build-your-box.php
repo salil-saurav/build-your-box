@@ -1,12 +1,9 @@
 <?php
 /**
  * Plugin Name: Build Your Box for WooCommerce
- * Plugin URI: https://example.com/build-your-box
  * Description: Allows customers to build custom product boxes with capacity tracking, similar to OurCow's Build Your Box functionality
  * Version: 1.0.0
- * Author: Salil
- * License: GPL v2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Author: Wytlabs
  * Text Domain: build-your-box
  * Domain Path: /languages
  * Requires at least: 5.8
@@ -85,8 +82,8 @@ class Build_Your_Box {
     }
 
     public function enqueue_scripts() {
-        wp_enqueue_style('byb-styles', BYB_PLUGIN_URL . 'assets/css/byb-styles.css', array(), BYB_VERSION);
 
+        wp_enqueue_style('byb-styles', BYB_PLUGIN_URL . 'assets/css/byb-styles.css', array(), BYB_VERSION);
         wp_enqueue_script('byb-scripts', BYB_PLUGIN_URL . 'assets/js/byb-scripts.js', array('jquery'), BYB_VERSION, true);
 
         wp_localize_script('byb-scripts', 'byb_ajax', array(

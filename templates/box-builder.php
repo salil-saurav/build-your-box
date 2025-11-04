@@ -9,10 +9,12 @@ $show_categories = $atts['show_categories'] === 'yes';
 $box_title       = get_option('byb_box_title', 'Build Your Box');
 $box_description = get_option('byb_box_description', 'Create your custom box by selecting products below.');
 
-$categories = get_terms(array(
-    'taxonomy'   => 'product_cat',
-    'hide_empty' => true,
-));
+// $categories = get_terms(array(
+//     'taxonomy'   => 'product_cat',
+//     'hide_empty' => true,
+// ));
+$categories = get_option('byb_selected_categories');
+
 ?>
 
 <div class="byb-container">
@@ -21,36 +23,58 @@ $categories = get_terms(array(
         <p class="byb-description"><?php echo esc_html($box_description); ?></p>
     </div>
 
-    <?php if ($show_categories && !is_wp_error($categories) && !empty($categories)): ?>
-        <div class="byb-filters">
-            <div class="byb-filter-group">
-                <label for="byb-category-filter"><?php _e('Category:', 'build-your-box'); ?></label>
-                <select id="byb-category-filter" class="byb-select">
-                    <option value=""><?php _e('All Categories', 'build-your-box'); ?></option>
-                    <?php foreach ($categories as $category): ?>
-                        <option value="<?php echo esc_attr($category->term_id); ?>">
-                            <?php echo esc_html($category->name); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="byb-filter-group">
-                <label for="byb-sort"><?php _e('Sort:', 'build-your-box'); ?></label>
-                <select id="byb-sort" class="byb-select">
-                    <option value="title"><?php _e('Name A-Z', 'build-your-box'); ?></option>
-                    <option value="price_asc"><?php _e('Price Low to High', 'build-your-box'); ?></option>
-                    <option value="price_desc"><?php _e('Price High to Low', 'build-your-box'); ?></option>
-                </select>
-            </div>
-
-            <div class="byb-filter-group byb-search-wrap">
-                <input type="text" id="byb-search" class="byb-search" placeholder="<?php _e('Search products...', 'build-your-box'); ?>">
-            </div>
-        </div>
-    <?php endif; ?>
-
     <div class="byb-layout">
+
+        <?php if ($show_categories && !is_wp_error($categories) && !empty($categories)): ?>
+            <div class="byb-filters">
+                <div class="byb-filter-group byb-search-wrap">
+                    <label for="byb-search">Search products</label>
+                    <input type="text" id="byb-search" class="byb-search" placeholder="Search products..." style="padding: 0 35px;">
+                </div>
+                <div class="byb-filter-group">
+                    <label><?php _e('Category:', 'build-your-box'); ?></label>
+                    <div class="byb-radio-group">
+                        <div class="byb-radio-item">
+                            <input type="radio" id="byb-category-all" name="byb-category-filter" value="" checked>
+                            <label for="byb-category-all"><?php _e('All Categories', 'build-your-box'); ?></label>
+                        </div>
+                        <?php
+                        $category_ids = explode(',', $categories);
+                        foreach ($category_ids as $category):
+                            $cat_term = get_term_by('id', $category, 'product_cat');
+                            if ($cat_term && !is_wp_error($cat_term)):
+                        ?>
+                                <div class="byb-radio-item">
+                                    <input type="radio" id="byb-category-<?php echo esc_attr($category); ?>" name="byb-category-filter" value="<?php echo esc_attr($category); ?>">
+                                    <label for="byb-category-<?php echo esc_attr($category); ?>"><?php echo esc_html($cat_term->name); ?></label>
+                                </div>
+                        <?php
+                            endif;
+                        endforeach;
+                        ?>
+                    </div>
+                </div>
+
+                <div class="byb-filter-group">
+                    <label><?php _e('Sort:', 'build-your-box'); ?></label>
+                    <div class="byb-radio-group">
+                        <div class="byb-radio-item">
+                            <input type="radio" id="sort-title" name="byb-sort" value="title" checked>
+                            <label for="sort-title"><?php _e('Name A-Z', 'build-your-box'); ?></label>
+                        </div>
+                        <div class="byb-radio-item">
+                            <input type="radio" id="sort-price-asc" name="byb-sort" value="price_asc">
+                            <label for="sort-price-asc"><?php _e('Price Low to High', 'build-your-box'); ?></label>
+                        </div>
+                        <div class="byb-radio-item">
+                            <input type="radio" id="sort-price-desc" name="byb-sort" value="price_desc">
+                            <label for="sort-price-desc"><?php _e('Price High to Low', 'build-your-box'); ?></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <div class="byb-main">
             <div class="byb-products-grid" id="byb-products-grid">
                 <div class="byb-loading"><?php _e('Loading products...', 'build-your-box'); ?></div>
@@ -59,6 +83,10 @@ $categories = get_terms(array(
 
         <div class="byb-sidebar">
             <div class="byb-box-summary" id="byb-box-summary">
+                <div class="byb-close-wrap">
+                    <button class="byb-close-btn" aria-label="Close" title="Close"></button>
+                </div>
+
                 <h3 class="byb-summary-title"><?php _e('Your Box', 'build-your-box'); ?></h3>
 
                 <div class="byb-capacity-meter">
@@ -73,13 +101,13 @@ $categories = get_terms(array(
                             ?>
                         </span>
                         <span class="byb-capacity-value">
-                            <span id="byb-current-capacity">0</span> /
-                            <span id="byb-max-capacity"><?php echo esc_html($max_capacity); ?></span>
+                            <span class="byb-current-capacity">0</span> /
+                            <span class="byb-max-capacity"><?php echo esc_html($max_capacity); ?></span>
                             <?php echo $capacity_type === 'weight' ? 'kg' : ''; ?>
                         </span>
                     </div>
                     <div class="byb-capacity-bar">
-                        <div class="byb-capacity-fill" id="byb-capacity-fill" style="width: 0%;"></div>
+                        <div class="byb-capacity-fill" style="width: 0%;"></div>
                     </div>
                 </div>
 
@@ -101,6 +129,36 @@ $categories = get_terms(array(
                 <button id="byb-clear-box" class="byb-btn byb-btn-secondary">
                     <?php _e('Clear Box', 'build-your-box'); ?>
                 </button>
+            </div>
+        </div>
+
+        <div id="byb_slider_toggle">
+            <div class="byb-capacity-meter">
+                <div class="byb-capacity-info">
+                    <span class="byb-capacity-label">
+                        <?php
+                        if ($capacity_type === 'weight') {
+                            _e('Weight:', 'build-your-box');
+                        } else {
+                            _e('Items:', 'build-your-box');
+                        }
+                        ?>
+                    </span>
+                    <span class="byb-capacity-value">
+                        <span class="byb-current-capacity">0</span> /
+                        <span class="byb-max-capacity"><?php echo esc_html($max_capacity); ?></span>
+                        <?php echo $capacity_type === 'weight' ? 'kg' : ''; ?>
+                    </span>
+                    <div class="byb-box-total">
+                        <div class="byb-total-row">
+                            <span id="byb-total-price" class="byb-total-price">$0.00</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="byb-capacity-bar">
+                    <div class="byb-capacity-fill" style="width: 0%;"></div>
+                </div>
             </div>
         </div>
     </div>

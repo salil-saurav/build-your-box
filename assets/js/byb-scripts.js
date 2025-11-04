@@ -17,27 +17,23 @@ document.addEventListener('DOMContentLoaded', () => {
             this.loadProducts();
             this.bindEvents();
             this.loadBoxContents();
+            this.toggleSidebar();
         },
 
         bindEvents() {
-            const categoryFilter = document.getElementById('byb-category-filter');
-            const sortSelect = document.getElementById('byb-sort');
+            const filterWrap = document.querySelectorAll('.byb-radio-group');
             const searchInput = document.getElementById('byb-search');
             const addToCartBtn = document.getElementById('byb-add-to-cart');
             const clearBoxBtn = document.getElementById('byb-clear-box');
 
-            if (categoryFilter) {
-                categoryFilter.addEventListener('change', () => {
-                    this.currentPage = 1;
-                    this.loadProducts();
-                });
-            }
+            if (filterWrap.length) {
 
-            if (sortSelect) {
-                sortSelect.addEventListener('change', () => {
-                    this.currentPage = 1;
-                    this.loadProducts();
-                });
+                filterWrap.forEach((el) => {
+                    el.addEventListener('change', () => {
+                        this.currentPage = 1;
+                        this.loadProducts();
+                    });
+                })
             }
 
             if (searchInput) {
@@ -53,17 +49,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Event delegation for dynamic elements
             document.addEventListener('click', (e) => {
+
+                let initialtext = ''
+                let currentBtn;
+
                 // Add to box button
                 if (e.target.closest('.byb-btn-add')) {
                     e.preventDefault();
                     const btn = e.target.closest('.byb-btn-add');
+
                     const productId = parseInt(btn.dataset.productId);
                     const product = this.products.find(p => p.id === productId);
 
                     btn.innerHTML = `<div class="byb-loader add"></div>`;
 
                     if (product && product.type === 'variable' && product.variations.length > 0) {
-                        this.showVariationSelector(product);
+                        this.showVariationSelector(product, btn);
                     } else {
                         this.addToBox(productId, 0);
                     }
@@ -83,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Close modal
                 if (e.target.matches('.byb-modal-close, .byb-modal-overlay')) {
                     e.preventDefault();
+
                     this.closeVariationSelector();
                 }
 
@@ -101,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     const btn = e.target.closest('.byb-pagination-btn');
                     const page = parseInt(btn.dataset.page);
-                    const searchEl = document.getElementById('byb-search');
+                    const searchEl = document.querySelector('.byb-header');
 
                     if (page && page !== this.currentPage && page >= 1 && page <= this.totalPages) {
                         this.currentPage = page;
@@ -122,8 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         async loadProducts() {
-            const category = document.getElementById('byb-category-filter')?.value || '';
-            const sort = document.getElementById('byb-sort')?.value || '';
+
+            const category = document.querySelector('input[name="byb-category-filter"]:checked')?.value || '';
+            const sort = document.querySelector('input[name="byb-sort"]:checked')?.value || '';
             const search = document.getElementById('byb-search')?.value || '';
 
             const productsGrid = document.getElementById('byb-products-grid');
@@ -278,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
             paginationContainer.innerHTML = paginationHTML;
         },
 
-        showVariationSelector(product) {
+        showVariationSelector(product, btn) {
             if (!product.variations || product.variations.length === 0) {
                 this.showNotice('No variations available for this product', 'error');
                 return;
@@ -427,27 +430,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentCapacity = this.capacityType === 'weight' ? data.total_weight : data.item_count;
             const capacityPercent = Math.min((currentCapacity / this.maxCapacity) * 100, 100);
 
-            const currentCapacityEl = document.getElementById('byb-current-capacity');
-            const totalPriceEl = document.getElementById('byb-total-price');
+            const currentCapacityEl = document.querySelectorAll('.byb-current-capacity');
+            const totalPriceEl = document.querySelectorAll('.byb-total-price');
 
-            if (currentCapacityEl) {
-                currentCapacityEl.textContent = currentCapacity.toFixed(2);
+            if (currentCapacityEl.length) {
+                currentCapacityEl.forEach(el => el.textContent = currentCapacity);
             }
 
-            if (totalPriceEl) {
-                totalPriceEl.innerHTML = data.total_price_html;
+            if (totalPriceEl.length) {
+                totalPriceEl.forEach(el => el.innerHTML = data.total_price_html);
             }
 
-            const capacityFill = document.getElementById('byb-capacity-fill');
-            if (capacityFill) {
-                capacityFill.style.width = capacityPercent + '%';
-                capacityFill.classList.remove('byb-warning', 'byb-full');
+            const capacityFill = document.querySelectorAll('.byb-capacity-fill');
+            if (capacityFill.length) {
 
-                if (capacityPercent >= 100) {
-                    capacityFill.classList.add('byb-full');
-                } else if (capacityPercent >= 80) {
-                    capacityFill.classList.add('byb-warning');
-                }
+                capacityFill.forEach((el) => {
+                    el.style.width = capacityPercent + '%';
+                    el.classList.remove('byb-warning', 'byb-full');
+
+                    if (capacityPercent >= 100) {
+                        el.classList.add('byb-full');
+                    } else if (capacityPercent >= 80) {
+                        el.classList.add('byb-warning');
+                    }
+                })
             }
 
             if (currentCapacity > this.maxCapacity) {
@@ -499,9 +505,15 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         clearBox() {
+            if (!this.box.length) {
+                alert('Your box is empty');
+                return;
+            }
+
             if (!confirm('Are you sure you want to clear your box?')) {
                 return;
             }
+
 
             this.box.forEach(item => {
                 this.removeFromBox(item.id);
@@ -543,7 +555,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 productsGrid.appendChild(skeleton);
             }
+        },
+        toggleSidebar() {
+            const toggleBtn = document.getElementById('byb_slider_toggle');
+            const sidebar = document.querySelector('.byb-sidebar');
+            const closeBtn = document.querySelector('.byb-close-btn');
+
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                toggleBtn.classList.toggle('inactive');
+            });
+
+            closeBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                toggleBtn.classList.toggle('inactive');
+            })
         }
+
     };
 
     if (document.querySelector('.byb-container')) {

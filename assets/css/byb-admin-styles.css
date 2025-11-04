@@ -48,3 +48,64 @@
 .byb-admin-help ul {
     margin-left: 20px;
 }
+
+.byb-category-selector {
+    max-width: 800px;
+}
+
+.byb-category-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 60px;
+}
+
+.byb-category-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #2271b1;
+    color: #fff;
+    border-radius: 16px;
+    font-size: 13px;
+    gap: 8px;
+    transition: background 0.2s;
+    max-height: 22px;
+}
+
+.byb-category-chip:hover {
+    background: #135e96;
+}
+
+.byb-category-chip .remove {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 4px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.byb-category-chip .remove:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.byb-category-dropdown {
+    margin-top: 10px;
+}
+
+.byb-category-dropdown select {
+    min-width: 300px;
+}
+
+.byb-empty-state {
+    color: #666;
+    font-style: italic;
+    padding: 10px;
+}
