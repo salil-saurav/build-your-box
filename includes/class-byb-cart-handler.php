@@ -15,6 +15,49 @@ class BYB_Cart_Handler {
         add_action('woocommerce_before_calculate_totals', array($this, 'update_cart_item_price'), 10, 1);
     }
 
+    private function calculate_discount($item_count)
+    {
+        $discount_rules = get_option('byb_discount_rules', '');
+        
+        if (empty($discount_rules)) {
+            return 0;
+        }
+
+        $rules = array();
+        $lines = explode("\n", $discount_rules);
+        
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
+            
+            $parts = array_map('trim', explode('|', $line));
+            if (count($parts) === 2) {
+                $min_quantity = intval($parts[0]);
+                $discount_percentage = floatval($parts[1]);
+                
+                if ($min_quantity > 0 && $discount_percentage > 0) {
+                    $rules[$min_quantity] = $discount_percentage;
+                }
+            }
+        }
+        
+        if (empty($rules)) {
+            return 0;
+        }
+        
+        krsort($rules);
+        
+        foreach ($rules as $min_qty => $discount_pct) {
+            if ($item_count >= $min_qty) {
+                return $discount_pct;
+            }
+        }
+        
+        return 0;
+    }
+
     public function add_box_to_cart() {
         check_ajax_referer('byb_nonce', 'nonce');
 
@@ -76,10 +119,12 @@ class BYB_Cart_Handler {
                 'value' => __('Build Your Box', 'build-your-box')
             );
 
+            $total_quantity = 0;
             foreach ($cart_item['byb_box_items'] as $item_key => $item) {
                 $product_id   = $item['product_id'];
                 $variation_id = $item['variation_id'];
                 $quantity     = $item['quantity'];
+                $total_quantity += $quantity;
 
                 $product = $variation_id ? wc_get_product($variation_id) : wc_get_product($product_id);
                 if ($product) {
@@ -100,6 +145,14 @@ class BYB_Cart_Handler {
                         'value' => sprintf(__('Qty: %d', 'build-your-box'), $quantity)
                     );
                 }
+            }
+
+            $discount_percentage = $this->calculate_discount($total_quantity);
+            if ($discount_percentage > 0) {
+                $item_data[] = array(
+                    'key'   => __('Box Discount', 'build-your-box'),
+                    'value' => sprintf(__('%s%% off', 'build-your-box'), $discount_percentage)
+                );
             }
         }
         return $item_data;
@@ -145,6 +198,7 @@ class BYB_Cart_Handler {
         foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
             if (isset($cart_item['byb_custom_box']) && isset($cart_item['byb_box_items'])) {
                 $total_price = 0;
+                $total_quantity = 0;
 
                 foreach ($cart_item['byb_box_items'] as $item_key => $item) {
                     $product_id   = $item['product_id'];
@@ -154,7 +208,15 @@ class BYB_Cart_Handler {
                     $product = $variation_id ? wc_get_product($variation_id) : wc_get_product($product_id);
                     if ($product) {
                         $total_price += floatval($product->get_price()) * intval($quantity);
+                        $total_quantity += intval($quantity);
                     }
+                }
+
+                $discount_percentage = $this->calculate_discount($total_quantity);
+                
+                if ($discount_percentage > 0) {
+                    $discount_amount = ($total_price * $discount_percentage) / 100;
+                    $total_price = $total_price - $discount_amount;
                 }
 
                 $cart_item['data']->set_price($total_price);

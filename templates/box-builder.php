@@ -121,6 +121,14 @@ $categories = get_option('byb_selected_categories');
                 </div>
 
                 <div class="byb-box-total">
+                    <div class="byb-total-row byb-subtotal-row" style="display: none;">
+                        <span><?php _e('Subtotal:', 'build-your-box'); ?></span>
+                        <span id="byb-subtotal-price" class="byb-subtotal-price">$0.00</span>
+                    </div>
+                    <div class="byb-total-row byb-discount-row" style="display: none;">
+                        <span><?php _e('Discount:', 'build-your-box'); ?></span>
+                        <span id="byb-discount-info" class="byb-discount-info">0%</span>
+                    </div>
                     <div class="byb-total-row">
                         <span><?php _e('Total:', 'build-your-box'); ?></span>
                         <span id="byb-total-price" class="byb-total-price">$0.00</span>

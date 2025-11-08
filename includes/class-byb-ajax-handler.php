@@ -22,6 +22,49 @@ class BYB_Ajax_Handler
         add_action('wp_ajax_nopriv_byb_get_box_contents', array($this, 'get_box_contents'));
     }
 
+    private function calculate_discount($item_count)
+    {
+        $discount_rules = get_option('byb_discount_rules', '');
+        
+        if (empty($discount_rules)) {
+            return 0;
+        }
+
+        $rules = array();
+        $lines = explode("\n", $discount_rules);
+        
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
+            
+            $parts = array_map('trim', explode('|', $line));
+            if (count($parts) === 2) {
+                $min_quantity = intval($parts[0]);
+                $discount_percentage = floatval($parts[1]);
+                
+                if ($min_quantity > 0 && $discount_percentage > 0) {
+                    $rules[$min_quantity] = $discount_percentage;
+                }
+            }
+        }
+        
+        if (empty($rules)) {
+            return 0;
+        }
+        
+        krsort($rules);
+        
+        foreach ($rules as $min_qty => $discount_pct) {
+            if ($item_count >= $min_qty) {
+                return $discount_pct;
+            }
+        }
+        
+        return 0;
+    }
+
     public function get_products()
     {
         check_ajax_referer('byb_nonce', 'nonce');
@@ -291,12 +334,26 @@ class BYB_Ajax_Handler
             $total_quantity += $quantity;
         }
 
+        $discount_percentage = $this->calculate_discount($total_quantity);
+        $discount_amount = 0;
+        $final_price = $total_price;
+        
+        if ($discount_percentage > 0) {
+            $discount_amount = ($total_price * $discount_percentage) / 100;
+            $final_price = $total_price - $discount_amount;
+        }
+
         wp_send_json_success(array(
-            'items'            => $items,
-            'total_price'      => $total_price,
-            'total_price_html' => wc_price($total_price),
-            'total_weight'     => $total_weight,
-            'item_count'       => $total_quantity
+            'items'                => $items,
+            'subtotal'             => $total_price,
+            'subtotal_html'        => wc_price($total_price),
+            'discount_percentage'  => $discount_percentage,
+            'discount_amount'      => $discount_amount,
+            'discount_amount_html' => wc_price($discount_amount),
+            'total_price'          => $final_price,
+            'total_price_html'     => wc_price($final_price),
+            'total_weight'         => $total_weight,
+            'item_count'           => $total_quantity
         ));
     }
 }

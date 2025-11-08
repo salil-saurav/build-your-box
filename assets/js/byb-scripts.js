@@ -432,6 +432,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const currentCapacityEl = document.querySelectorAll('.byb-current-capacity');
             const totalPriceEl = document.querySelectorAll('.byb-total-price');
+            const subtotalPriceEl = document.getElementById('byb-subtotal-price');
+            const discountInfoEl = document.getElementById('byb-discount-info');
+            const subtotalRow = document.querySelector('.byb-subtotal-row');
+            const discountRow = document.querySelector('.byb-discount-row');
 
             if (currentCapacityEl.length) {
                 currentCapacityEl.forEach(el => el.textContent = currentCapacity);
@@ -439,6 +443,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (totalPriceEl.length) {
                 totalPriceEl.forEach(el => el.innerHTML = data.total_price_html);
+            }
+
+            if (data.discount_percentage && data.discount_percentage > 0) {
+                if (subtotalPriceEl && subtotalRow) {
+                    subtotalPriceEl.innerHTML = data.subtotal_html;
+                    subtotalRow.style.display = 'flex';
+                }
+                if (discountInfoEl && discountRow) {
+                    discountInfoEl.innerHTML = `${data.discount_percentage}% (-${data.discount_amount_html})`;
+                    discountRow.style.display = 'flex';
+                }
+            } else {
+                if (subtotalRow) subtotalRow.style.display = 'none';
+                if (discountRow) discountRow.style.display = 'none';
             }
 
             const capacityFill = document.querySelectorAll('.byb-capacity-fill');
