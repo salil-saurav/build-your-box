@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 $max_capacity    = $atts['max_capacity'];
 $capacity_type   = $atts['capacity_type'];
 $show_categories = $atts['show_categories'] === 'yes';
+$show_filters    = $atts['show_filters'] === 'yes';
 $box_title       = get_option('byb_box_title', 'Build Your Box');
 $box_description = get_option('byb_box_description', 'Create your custom box by selecting products below.');
 
@@ -25,12 +26,13 @@ $categories = get_option('byb_selected_categories');
 
     <div class="byb-layout">
 
-        <?php if ($show_categories && !is_wp_error($categories) && !empty($categories)): ?>
-            <div class="byb-filters">
-                <div class="byb-filter-group byb-search-wrap">
-                    <label for="byb-search">Search products</label>
-                    <input type="text" id="byb-search" class="byb-search" placeholder="Search products..." style="padding: 0 35px;">
-                </div>
+        <div class="byb-filters">
+            <div class="byb-filter-group byb-search-wrap">
+                <label for="byb-search">Search products</label>
+                <input type="text" id="byb-search" class="byb-search" placeholder="Search products..." style="padding: 0 35px;">
+            </div>
+            <?php if ($show_categories && !is_wp_error($categories) && !empty($categories)): ?>
+
                 <div class="byb-filter-group">
                     <label><?php _e('Category:', 'build-your-box'); ?></label>
                     <div class="byb-radio-group">
@@ -54,7 +56,9 @@ $categories = get_option('byb_selected_categories');
                         ?>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($show_filters): ?>
                 <div class="byb-filter-group">
                     <label><?php _e('Sort:', 'build-your-box'); ?></label>
                     <div class="byb-radio-group">
@@ -72,8 +76,9 @@ $categories = get_option('byb_selected_categories');
                         </div>
                     </div>
                 </div>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
+
 
         <div class="byb-main">
             <div class="byb-products-grid" id="byb-products-grid">

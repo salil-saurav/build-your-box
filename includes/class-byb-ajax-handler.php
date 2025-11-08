@@ -43,7 +43,6 @@ class BYB_Ajax_Handler
                     'value'   => 'instock',
                     'compare' => '='
                 ),
-                // Optional: include your custom filter too
                 // array(
                 //     'key'     => '_byb_enabled',
                 //     'value'   => 'yes',

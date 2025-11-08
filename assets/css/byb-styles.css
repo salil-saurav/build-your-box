@@ -101,8 +101,13 @@ body.byb-modal-open {
 /* ============================================
     UTILITIES & LAYOUT
    ============================================ */
+
+.container:has(.byb-container) {
+    max-width: none;
+}
+
 .byb-container {
-    max-width: 1200px;
+    /* max-width: 1200px; */
     margin: 0 auto;
     padding: 20px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -317,26 +322,19 @@ body.byb-modal-open {
 }
 
 .byb-radio-item input[type="radio"]:checked+label {
-    background: var(--gradient-primary);
-    border-color: #667eea;
-    color: white;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    background: var(--byb-primary);
+    color: #000;
+    box-shadow: 0 4px 12px rgba(110, 107, 54, 0.4);
 }
 
 
 /* ============================================
     PRODUCTS GRID
    ============================================ */
+
 .byb-products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 24px;
-    margin-bottom: 30px;
-}
-
-#byb-products-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
@@ -499,8 +497,9 @@ body.byb-modal-open {
     border: 2px solid var(--byb-primary);
     border-radius: var(--radius);
     padding: 20px;
-    min-width: 400px;
-    position: relative;
+    position: sticky;
+    max-width: 350px;
+    top: 100px;
 }
 
 .byb-summary-title {
@@ -827,26 +826,11 @@ body.byb-modal-open {
     SIDEBAR
    ============================================ */
 .byb-sidebar {
-    width: 460px;
-    position: fixed;
-    right: -1000px;
     transition: var(--transition);
-    height: 100vh;
-    top: 0;
-    background: rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 15px;
-    z-index: 999;
 }
-
-.byb-sidebar.active {
-    right: 0;
-}
-
-
 
 /* ============================================
     CLOSE BUTTON
@@ -957,7 +941,7 @@ body.byb-modal-open {
 #byb_slider_toggle {
     position: fixed;
     right: 88px;
-    background: var(--gradient-primary);
+    background: var(--byb-primary);
     padding: 10px 35px;
     border-radius: 33px;
     bottom: 33px;
@@ -995,15 +979,56 @@ body.byb-modal-open {
     MEDIA QUERIES
    ============================================ */
 
-@media (max-width: 1024px) {
+@media (min-width:1280px) {
     #byb_slider_toggle {
-        right: 67px;
+        display: none;
     }
 }
 
-@media (max-width: 992px) {
-    #byb-products-grid {
-        grid-template-columns: repeat(2, 1fr);
+@media (max-width: 1620px) {
+    .byb-products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1400px) {
+    .byb-products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .byb-box-summary {
+        max-width: 300px;
+    }
+
+    .byb-filters {
+        max-width: 265px;
+    }
+}
+
+@media (max-width: 1280px) {
+    .byb-sidebar {
+        position: fixed;
+        height: 100vh;
+        top: 0;
+        justify-content: center;
+        z-index: 99;
+        right: -1000px;
+    }
+
+    .byb-sidebar.active {
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 0 21px;
+    }
+
+    .byb-box-summary {
+        max-width: 350px;
+    }
+}
+
+@media (max-width: 1024px) {
+    #byb_slider_toggle {
+        right: 67px;
     }
 }
 
@@ -1036,7 +1061,6 @@ body.byb-modal-open {
         gap: 16px;
     }
 
-    .byb-products-grid,
     #byb-products-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 15px;
