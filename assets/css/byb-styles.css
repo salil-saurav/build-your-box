@@ -976,6 +976,14 @@ body.byb-modal-open {
     margin-left: 7px;
 }
 
+.discount-pitch span.remaining {
+    font-weight: 800;
+}
+
+.discount-pitch span.discount {
+    font-weight: 700;
+}
+
 /* ============================================
     MEDIA QUERIES
    ============================================ */
@@ -1053,6 +1061,9 @@ body.byb-modal-open {
 
     #byb_slider_toggle {
         padding: 10px 25px;
+    }
+    .byb-box-summary {
+        max-width: none;
     }
 }
 

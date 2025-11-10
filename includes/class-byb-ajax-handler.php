@@ -72,6 +72,15 @@ class BYB_Ajax_Handler
         return 0;
     }
 
+    private function get_selected_categories()
+    {
+
+        $category_option = get_option('byb_selected_categories');
+        $category_ids = explode(',', $category_option);
+
+        return $category_ids;
+    }
+
     public function get_products()
     {
         check_ajax_referer('byb_nonce', 'nonce');
@@ -88,11 +97,11 @@ class BYB_Ajax_Handler
             'paged'          => $page,
             'post_status'    => 'publish',
             'meta_query'     => array(
-                // array(
-                //     'key'     => '_stock_status',
-                //     'value'   => 'instock',
-                //     'compare' => '='
-                // ),
+                array(
+                    'key'     => '_stock_status',
+                    'value'   => 'instock',
+                    'compare' => '='
+                ),
                 // array(
                 //     'key'     => '_byb_enabled',
                 //     'value'   => 'yes',
@@ -101,13 +110,15 @@ class BYB_Ajax_Handler
             )
         );
 
+        if (get_option('byb_show_categories') == 'yes') {
 
-        if (!empty($category)) {
+            $category_ids = empty($category) ? $this->get_selected_categories() : $category;
+
             $args['tax_query'] = array(
                 array(
                     'taxonomy' => 'product_cat',
                     'field'    => 'term_id',
-                    'terms'    => $category
+                    'terms'    => $category_ids
                 )
             );
         }

@@ -126,6 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
         async loadProducts() {
 
             const category = document.querySelector('input[name="byb-category-filter"]:checked')?.value || '';
+
+            console.log(category);
+
             const sort = document.querySelector('input[name="byb-sort"]:checked')?.value || '';
             const search = document.getElementById('byb-search')?.value || '';
 
