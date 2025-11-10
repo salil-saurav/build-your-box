@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Build Your Box for WooCommerce
- * Description: Allows customers to build custom product boxes with capacity tracking, similar to OurCow's Build Your Box functionality
+ * Description: Allows customers to build custom product boxes with capacity tracking
  * Version: 1.0.0
  * Author: Wytlabs
  * Text Domain: build-your-box
