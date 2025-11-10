@@ -368,14 +368,13 @@ body.byb-modal-open {
 
 .byb-product-image {
     width: 100%;
-    height: 180px;
+    height: 300px;
     object-fit: cover;
     background: var(--gray-light);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--secondary-color);
-    object-position: top;
 }
 
 .byb-product-info {
