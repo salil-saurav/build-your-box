@@ -22,46 +22,53 @@ class BYB_Ajax_Handler
         add_action('wp_ajax_nopriv_byb_get_box_contents', array($this, 'get_box_contents'));
     }
 
-    private function calculate_discount($item_count)
+    private function parse_discount_rule($discount_rules)
     {
-        $discount_rules = get_option('byb_discount_rules', '');
-        
-        if (empty($discount_rules)) {
-            return 0;
-        }
-
         $rules = array();
         $lines = explode("\n", $discount_rules);
-        
+
         foreach ($lines as $line) {
             $line = trim($line);
             if (empty($line)) {
                 continue;
             }
-            
+
             $parts = array_map('trim', explode('|', $line));
             if (count($parts) === 2) {
                 $min_quantity = intval($parts[0]);
                 $discount_percentage = floatval($parts[1]);
-                
+
                 if ($min_quantity > 0 && $discount_percentage > 0) {
                     $rules[$min_quantity] = $discount_percentage;
                 }
             }
         }
-        
+
         if (empty($rules)) {
             return 0;
         }
-        
+
         krsort($rules);
-        
+
+        return $rules;
+    }
+
+    private function calculate_discount($item_count)
+    {
+        $discount_rules = get_option('byb_discount_rules', '');
+
+        if (empty($discount_rules)) {
+            return 0;
+        }
+
+        $rules = $this->parse_discount_rule($discount_rules);
+
         foreach ($rules as $min_qty => $discount_pct) {
             if ($item_count >= $min_qty) {
                 return $discount_pct;
             }
         }
-        
+
         return 0;
     }
 
@@ -81,11 +88,11 @@ class BYB_Ajax_Handler
             'paged'          => $page,
             'post_status'    => 'publish',
             'meta_query'     => array(
-                array(
-                    'key'     => '_stock_status',
-                    'value'   => 'instock',
-                    'compare' => '='
-                ),
+                // array(
+                //     'key'     => '_stock_status',
+                //     'value'   => 'instock',
+                //     'compare' => '='
+                // ),
                 // array(
                 //     'key'     => '_byb_enabled',
                 //     'value'   => 'yes',
@@ -335,13 +342,17 @@ class BYB_Ajax_Handler
         }
 
         $discount_percentage = $this->calculate_discount($total_quantity);
+
         $discount_amount = 0;
         $final_price = $total_price;
-        
+
         if ($discount_percentage > 0) {
             $discount_amount = ($total_price * $discount_percentage) / 100;
             $final_price = $total_price - $discount_amount;
         }
+
+        $discount_rules = get_option('byb_discount_rules', '');
+        $discount_rates = !empty($discount_rules) ? $this->parse_discount_rule($discount_rules) : 0;
 
         wp_send_json_success(array(
             'items'                => $items,
@@ -353,7 +364,8 @@ class BYB_Ajax_Handler
             'total_price'          => $final_price,
             'total_price_html'     => wc_price($final_price),
             'total_weight'         => $total_weight,
-            'item_count'           => $total_quantity
+            'item_count'           => $total_quantity,
+            'discount_rates'       => $discount_rates
         ));
     }
 }

@@ -114,6 +114,15 @@ $categories = get_option('byb_selected_categories');
                     <div class="byb-capacity-bar">
                         <div class="byb-capacity-fill" style="width: 0%;"></div>
                     </div>
+
+                    <div class="discount-pitch">
+                        <p>
+                            Add <span class="remaining"></span> more item(s)
+                            to get up to <span class="discount"></span>% OFF!
+                        </p>
+                    </div>
+
+
                 </div>
 
                 <div class="byb-box-items" id="byb-box-items">

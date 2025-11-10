@@ -115,7 +115,7 @@ body.byb-modal-open {
 
 .byb-layout {
     display: flex;
-    gap: 30px;
+    gap: 15px;
 }
 
 .byb-main {
@@ -230,7 +230,7 @@ body.byb-modal-open {
     box-shadow: var(--shadow);
     margin-bottom: 30px;
     transition: var(--transition);
-    max-width: 350px;
+    max-width: 300px;
 }
 
 .byb-filter-group label {
@@ -375,6 +375,7 @@ body.byb-modal-open {
     align-items: center;
     justify-content: center;
     color: var(--secondary-color);
+    object-position: top;
 }
 
 .byb-product-info {
@@ -498,8 +499,8 @@ body.byb-modal-open {
     border-radius: var(--radius);
     padding: 20px;
     position: sticky;
-    max-width: 350px;
-    top: 100px;
+    max-width: 380px;
+    top: 50px;
 }
 
 .byb-summary-title {

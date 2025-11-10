@@ -116,7 +116,7 @@ class BYB_Settings_General
    public static function text_field_callback($args)
    {
       $value = get_option($args['name'], $args['default'] ?? '');
-      echo '<input type="text" name="' . esc_attr($args['name']) . '" value="' . esc_attr($value) . '" class="regular-text">';
+      echo '<input type="text" name="' . esc_attr($args['name']) . '" value="' . esc_attr($value) . '" class="large-text">';
    }
 
    public static function textarea_field_callback($args)

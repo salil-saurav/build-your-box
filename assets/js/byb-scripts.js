@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.totalPages = data.data.pagination.total_pages;
                     this.renderProducts();
                     this.renderPagination(data.data.pagination);
+
                 } else {
                     productsGrid.innerHTML = '<div class="byb-loading">No products found</div>';
                 }
@@ -374,6 +375,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
+
+        // Show discount pitch
+
+        pitchDiscount(discountRates, itemCount) {
+            const pitchBox = document.querySelector('.discount-pitch');
+            const remainingEl = pitchBox?.querySelector('.remaining');
+            const discountEl = pitchBox?.querySelector('.discount');
+
+            if (!pitchBox || !remainingEl || !discountEl) return;
+
+            // Convert keys to numbers and sort ascending
+            const thresholds = Object.keys(discountRates)
+                .map(Number)
+                .sort((a, b) => a - b);
+
+            const maxThreshold = thresholds.at(-1);
+            const nextThreshold = thresholds.find(t => itemCount < t);
+
+            // If user has reached or exceeded the max threshold → hide pitch
+            if (itemCount >= maxThreshold) {
+                pitchBox.style.display = 'none';
+                return;
+            }
+
+            // Otherwise, show pitch and update values
+            pitchBox.style.display = '';
+            if (nextThreshold) {
+                const needed = nextThreshold - itemCount;
+                remainingEl.textContent = needed;
+                discountEl.textContent = discountRates[nextThreshold];
+            }
+        },
+
+
         async loadBoxContents() {
             try {
                 const formData = new FormData();
@@ -391,6 +426,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.box = data.data.items;
                     this.updateBoxDisplay(data.data);
                     this.renderProducts();
+
+                    this.pitchDiscount(data.data.discount_rates, data.data.item_count);
                 }
             } catch (error) {
                 console.error('Error loading box contents:', error);

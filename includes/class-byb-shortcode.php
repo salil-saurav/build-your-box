@@ -22,7 +22,7 @@ class BYB_Shortcode {
             'max_capacity'    => get_option('byb_max_capacity', 10),
             'capacity_type'   => get_option('byb_capacity_type', 'items'),
             'show_categories' => get_option('byb_show_categories', 'yes'),
-            'show_filters'     => get_option('byb_show_filters', 'yes')
+            'show_filters'    => get_option('byb_show_filters', 'yes')
         ), $atts);
 
         wp_localize_script('byb-scripts', 'bybSettings', array(
